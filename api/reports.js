@@ -1,0 +1,6 @@
+import { db, auth } from 'hatchable';
+export const access='public';
+export const methods=['POST'];
+export default async function(req,res){
+ try{const u=await auth.getUser(req);if(!u)return res.status(401).json({error:'Sign in to report content.'});const b=req.body||{},targetType=String(b.targetType||''),targetId=String(b.targetId||'').slice(0,80),reason=String(b.reason||'').trim().slice(0,100),description=String(b.description||'').trim().slice(0,1000);if(!['listing','user'].includes(targetType)||!targetId||reason.length<3)return res.status(400).json({error:'Select a target and provide a report reason.'});if(targetType==='listing'){const x=await db.query('SELECT id FROM listings WHERE id=$1',[Number(targetId)]);if(!x.rows.length)return res.status(404).json({error:'Listing not found.'})}await db.query('INSERT INTO reports(reporter_id,target_type,target_id,reason,description) VALUES($1,$2,$3,$4,$5)',[String(u.id),targetType,targetId,reason,description]);return res.status(201).json({ok:true});}catch(e){console.error('reports',e);res.status(500).json({error:'Could not submit report.'})}
+}

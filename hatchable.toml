@@ -1,0 +1,17 @@
+[auth]
+enabled = true
+providers = ["email"]
+
+[db.tables.profiles]
+read = "public"
+write = "own"
+
+[db.tables.favourites]
+read = "own"
+write = "own"
+
+[db.tables.notifications]
+read = "own"
+write = "own"
+
+name = "ReUseHub — Student Marketplace"
